@@ -1,0 +1,24 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.log.agent.constant.LogAgentProperties",
+      "name": "spring.log-agent",
+      "type": "com.log.agent.constant.LogAgentProperties"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.log.agent.constant.LogAgentProperties",
+      "name": "spring.log-agent.enabled",
+      "description": "是否启用日志收集，默认false",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.log.agent.constant.LogAgentProperties",
+      "name": "spring.log-agent.url",
+      "description": "日志输出log-transfer地址",
+      "type": "java.lang.String"
+    }
+    ]
+}

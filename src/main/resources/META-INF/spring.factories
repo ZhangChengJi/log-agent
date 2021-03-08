@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    com.log.agent.LogAutoConfiguration,\
+    com.log.agent.utils.SpringContextHolder
