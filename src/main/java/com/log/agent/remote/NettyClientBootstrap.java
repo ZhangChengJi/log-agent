@@ -39,9 +39,9 @@ public class NettyClientBootstrap  implements RemotingBootstrap{
         try {
             f.await(10000, TimeUnit.MILLISECONDS);
             if (f.isCancelled()) {
-                throw new ConnectException("connect cancelled, can not connect to log-transfer.");
+                throw new FrameworkException("connect cancelled, can not connect to log-transfer.");
             } else if (!f.isSuccess()) {
-                throw new ConnectException( "connect failed, can not connect to log-transfer.");
+                throw new FrameworkException( "connect failed, can not connect to log-transfer.");
             } else {
                 channel = f.channel();
             }
@@ -63,11 +63,9 @@ public class NettyClientBootstrap  implements RemotingBootstrap{
 
     public void destroyObject( Channel channel)  {
         if (channel != null) {
-                log.info("will destroy channel:" + channel);
-            }
             channel.disconnect();
             channel.close();
-
+            }
     }
     @Override
     public void shutdown() {

@@ -1,20 +1,25 @@
 package com.log.agent.utils;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.http.HttpUtil;
 import com.log.agent.constant.LogAgentProperties;
 import com.log.agent.domain.SysLog;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.experimental.UtilityClass;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 @UtilityClass
@@ -25,7 +30,7 @@ public class SysLogUtils {
         HttpServletRequest request = ((ServletRequestAttributes) Objects
                 .requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
         SysLog sysLog = new SysLog();
-       // sysLog.setCreateBy(Objects.requireNonNull(getUsername()));
+        sysLog.setCreateBy(getUserName(request));
         sysLog.setRemoteAddr(ServletUtil.getClientIP(request));
         sysLog.setRequestUri(URLUtil.getPath(request.getRequestURI()));
         sysLog.setMethod(request.getMethod());
@@ -53,29 +58,22 @@ public class SysLogUtils {
         }
         return params.toString();
     }
-    /**
-     * 获取客户端
-     * @return clientId
-     */
-//    private String getClientId() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication instanceof OAuth2Authentication) {
-//            OAuth2Authentication auth2Authentication = (OAuth2Authentication) authentication;
-//            return auth2Authentication.getOAuth2Request().getClientId();
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * 获取用户名称
-//     * @return username
-//     */
-//    private String getUsername() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication == null) {
-//            return null;
-//        }
-//        return authentication.getName();
-//    }
+    public  String getUserName( HttpServletRequest request) {
+        String authorization= request.getHeader("Authorization");
+
+        if (authorization==null ||authorization.equals("")){
+            return null;
+        }
+        SignedJWT jwt = null;
+        try {
+            jwt = SignedJWT.parse(authorization.split(" ")[1].trim());
+            return jwt.getJWTClaimsSet().getClaim("username").toString();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 }

@@ -14,6 +14,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ import java.lang.reflect.Method;
 @Slf4j
 @Aspect
 public class SysLogAspect {
-    int a=0;
+
    private final LogAgentProperties logAgentProperties;
    public SysLogAspect(LogAgentProperties logAgentProperties){
        this.logAgentProperties = logAgentProperties;
@@ -45,8 +46,7 @@ public class SysLogAspect {
         ApiOperation annotation = method.getAnnotation(ApiOperation.class);
         if(annotation != null){
             //注解上的描述
-            a++;
-            logVo.setTitle(a+annotation.value());
+            logVo.setTitle(annotation.value());
         }
         // 发送异步日志事件
         Long startTime = System.currentTimeMillis();
