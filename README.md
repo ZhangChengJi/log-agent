@@ -38,9 +38,9 @@ log-agent项目是日志收集项目的client 端， 需要配合log-transfer se
 
    ```yaml
    spring:
-   	log-agent:
-       enabled: true    //log-agent 启用状态，默认不启用
-       url: localhost:9000 // log-transfer tcp地址 
+     log-agent:
+       enabled: true #log-agent 启用状态，默认不启用
+       url: localhost:9000 #log-transfer tcp地
    ```
 
 4. 注意如果上面👆三步设置完成后启动报错为：`can not connect to log-transfer.`表示您设置的log-transfer tcp地址无法连接🚫
