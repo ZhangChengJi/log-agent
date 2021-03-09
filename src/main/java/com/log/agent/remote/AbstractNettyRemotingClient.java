@@ -16,6 +16,7 @@ public class AbstractNettyRemotingClient extends AbstractNettyRemoting {
     private final NettyClientBootstrap clientBootstrap;
     private final NettyClientChannelManager nettyClientChannelManager;
     private final LogAgentProperties logAgentProperties;
+    private final String logTransfer;
     private Channel channel;
     public AbstractNettyRemotingClient(LogAgentProperties logAgentProperties, NettyClientBootstrap nettyClientBootstrap){
         super();
@@ -23,12 +24,13 @@ public class AbstractNettyRemotingClient extends AbstractNettyRemoting {
         this.clientBootstrap = nettyClientBootstrap;
         this.clientBootstrap.start();
         this.nettyClientChannelManager=new NettyClientChannelManager(this);
+        this.logTransfer=this.logAgentProperties.getUrl();
     }
 
 
 
     public void init() {
-              this.channel=  nettyClientChannelManager.reconnect(this.logAgentProperties.getUrl());
+              this.channel=  nettyClientChannelManager.reconnect(this.logTransfer);
     }
 
     public NettyClientBootstrap getClientBootstrap() {
@@ -38,7 +40,7 @@ public class AbstractNettyRemotingClient extends AbstractNettyRemoting {
     public synchronized void send(JSON log) {
         if(!this.channel.isOpen()){
             synchronized(this) {
-                this.channel = nettyClientChannelManager.reconnect("localhost:9000");
+                this.channel = nettyClientChannelManager.reconnect(this.logTransfer);
             }
         }
         this.channel.writeAndFlush(log.toString());
