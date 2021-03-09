@@ -18,3 +18,30 @@ log-agent项目是日志收集项目的client 端， 需要配合log-transfer se
 
 ## 🧸使用
 
+1. 在项目根目录进行mvn install打成jar 发布到本地仓库
+
+   ```sh
+   $ mvn install
+   ```
+
+2. Pom.xml引用log-agent,注意版本
+
+   ````xml
+   <dependency>
+   	<groupId>com.log.agent</groupId>
+   	<artifactId>log-agent</artifactId>
+   	<version>1.0-SNAPSHOT</version>
+   </dependency>
+   ````
+
+3. 设置配置信息，在spring-boot  项目的`yaml`或`properties`配置文件进行添加：
+
+   ```yaml
+   spring:
+   	log-agent:
+       enabled: true    //log-agent 启用状态，默认不启用
+       url: localhost:9000 // log-transfer tcp地址 
+   ```
+
+4. 注意如果上面👆三步设置完成后启动报错为：`can not connect to log-transfer.`表示您设置的log-transfer tcp地址无法连接🚫
+
