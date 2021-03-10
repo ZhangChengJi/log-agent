@@ -25,14 +25,22 @@ public class NettyClientChannelManager {
     ConcurrentMap<String, Channel> getChannels() {
         return channels;
     }
+    Channel connect(String serverAddress) {
 
-    Channel reconnect(String serverAddress) {
+        try {
+            return   acquireChannel(serverAddress);
+        } catch (Exception e) {
+            log.error("{} can not connect to {} cause:{}", FrameworkErrorCode.NetConnect.getErrCode(), serverAddress, e.getMessage(), e);
+            throw new FrameworkException(e, "can not connect to services-server.");
+        }
+    }
 
+    Channel reConnect(String serverAddress) {
             try {
-             return   acquireChannel(serverAddress);
+             return   doConnect(serverAddress);
             } catch (Exception e) {
-                log.error("{} can not connect to {} cause:{}", FrameworkErrorCode.NetConnect.getErrCode(), serverAddress, e.getMessage(), e);
-                throw new FrameworkException(e, "can not connect to services-server.");
+               // log.error("{} can not connect to {} cause:{}", FrameworkErrorCode.NetConnect.getErrCode(), serverAddress, e.getMessage(), e);
+                return null;
             }
         }
 
@@ -46,21 +54,28 @@ public class NettyClientChannelManager {
                 clientBootstrap.destroyObject(channelToServer);
                 channels.remove(serverAddress);
             }
-            return doConnect(serverAddress);
+            InetSocketAddress address =   toInetSocketAddress(serverAddress);
+            Channel channel= clientBootstrap.getNewChannel(address);
+            channels.put(serverAddress,channel);
+            return channel;
         }
     }
 
     public Channel doConnect(String serverAddress) {
         Channel channelToServer = channels.get(serverAddress);
-
         if (channelToServer != null && channelToServer.isActive()) {
             return channelToServer;
         }
-        Channel channelFromPool;
-        InetSocketAddress address =   toInetSocketAddress(serverAddress);
-       Channel channel= clientBootstrap.getNewChannel(address);
-       channels.put(serverAddress,channel);
-       return channel;
+        synchronized(this) {
+            if (channelToServer != null) {
+                clientBootstrap.destroyObject(channelToServer);
+                channels.remove(serverAddress);
+            }
+            InetSocketAddress address = toInetSocketAddress(serverAddress);
+            Channel channel = clientBootstrap.reconnect(address);
+            channels.put(serverAddress, channel);
+            return channel;
+        }
 
 
     }

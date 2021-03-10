@@ -41,7 +41,7 @@ public class NettyClientBootstrap  implements RemotingBootstrap{
             if (f.isCancelled()) {
                 throw new FrameworkException("connect cancelled, can not connect to log-transfer.");
             } else if (!f.isSuccess()) {
-                throw new FrameworkException( "connect failed, can not connect to log-transfer.");
+                throw new FrameworkException( "❌connect failed, can not connect to log-transfer.");
             } else {
                 channel = f.channel();
             }
@@ -52,6 +52,25 @@ public class NettyClientBootstrap  implements RemotingBootstrap{
         return channel;
     }
 
+    public Channel reconnect(InetSocketAddress address){
+        Channel channel = null;
+        ChannelFuture f = this.bootstrap.connect(address);
+
+        try {
+            f.await(10000, TimeUnit.MILLISECONDS);
+            if (f.isCancelled()) {
+                throw new FrameworkException("connect cancelled, can not connect to log-transfer.");
+            } else if (!f.isSuccess()) {
+                log.error("⚠️connect failed ✘︎ can not connect to log-transfer.️");
+            } else {
+                channel = f.channel();
+            }
+        } catch (Exception ignored) {
+
+
+        }
+        return channel;
+    }
     @Override
     public void start() {
         this.bootstrap.group(this.eventLoopGroupWorker)

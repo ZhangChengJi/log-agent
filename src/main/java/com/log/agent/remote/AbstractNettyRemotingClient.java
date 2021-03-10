@@ -30,7 +30,7 @@ public class AbstractNettyRemotingClient extends AbstractNettyRemoting {
 
 
     public void init() {
-              this.channel=  nettyClientChannelManager.reconnect(this.logTransfer);
+              this.channel=  nettyClientChannelManager.connect(this.logTransfer);
     }
 
     public NettyClientBootstrap getClientBootstrap() {
@@ -38,12 +38,19 @@ public class AbstractNettyRemotingClient extends AbstractNettyRemoting {
     }
 
     public synchronized void send(JSON log) {
-        if(!this.channel.isOpen()){
-            synchronized(this) {
-                this.channel = nettyClientChannelManager.reconnect(this.logTransfer);
+        synchronized(this) {
+            if (this.channel != null) {
+                if (!this.channel.isOpen()) {
+                    this.channel = nettyClientChannelManager.reConnect(this.logTransfer);
+                }
+
+            } else {
+                this.channel = nettyClientChannelManager.reConnect(this.logTransfer);
+            }
+
+            if (this.channel != null && this.channel.isOpen()) {
+                this.channel.writeAndFlush(log.toString());
             }
         }
-        this.channel.writeAndFlush(log.toString());
-
-    }
+        }
 }

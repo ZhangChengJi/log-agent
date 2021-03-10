@@ -28,7 +28,7 @@ public class LogAutoConfiguration {
 
    @Bean
    public LogAgentProperties logAgentProperties(ApplicationContext context) {
-       log.info("logAgent 日志收集插件启动⇢ 🚗️  🚗  🚗 .....");
+       log.info("logAgent Log collection plug in start 🚗️  🚗  🚗 .....");
        if (context.getParent() != null
                && BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
                context.getParent(), LogAgentProperties.class).length > 0) {
