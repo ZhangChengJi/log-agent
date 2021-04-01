@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 public class SysLogListener {
    private final AbstractNettyRemotingClient remotingClient;
 
-
+    @Async
     @Order
     @EventListener(SysLogEvent.class)
     public void saveSysLog(SysLogEvent event) {
